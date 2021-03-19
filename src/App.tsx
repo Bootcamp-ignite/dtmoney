@@ -1,31 +1,29 @@
 import React, { useState } from "react";
-import Modal from "react-modal";
 import Dashboard from "./components/Dashboard";
 import Header from "./components/Header";
+import NewTransactionModal from "./components/NewTransactionModal";
 
 const App: React.FC = () => {
-  const [isOpenNewTransactionModal, setIsOpenNewTransactionModal] = useState(
-    true
+  const [isNewTransactionModalOpen, setIsNewTransactionModalOpen] = useState(
+    false
   );
 
   function handleCloseNewTransactionModal() {
-    setIsOpenNewTransactionModal(false);
+    setIsNewTransactionModalOpen(false);
   }
 
   function handleOpenNewTransactionModal() {
-    setIsOpenNewTransactionModal(true);
+    setIsNewTransactionModalOpen(true);
   }
 
   return (
     <>
       <Header onOpenNewTransactionModal={handleOpenNewTransactionModal} />
       <Dashboard />
-      <Modal
-        isOpen={isOpenNewTransactionModal}
+      <NewTransactionModal
+        isOpen={isNewTransactionModalOpen}
         onRequestClose={handleCloseNewTransactionModal}
-      >
-        <h1>Modal</h1>
-      </Modal>
+      />
     </>
   );
 };
