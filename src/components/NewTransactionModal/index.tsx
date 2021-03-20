@@ -13,6 +13,7 @@ import outcomeImg from "../../assets/outcome.svg";
 
 import closeImg from "../../assets/close.svg";
 import Input from "../Input";
+import { api } from "../../services/api";
 
 interface NewTransactionModalProps {
   isOpen: boolean;
@@ -41,11 +42,13 @@ const NewTransactionModal: React.FC<NewTransactionModalProps> = ({
         type: Yup.string().required(),
       });
 
-      data = { ...data, type: transactionType };
+      data = { ...data, value: Number(data.value), type: transactionType };
       await schema.validate(data, {
         abortEarly: false,
       });
-      console.log(data);
+
+      await api.post("/transactions", data);
+      onRequestClose();
     } catch (err) {
       if (err instanceof Yup.ValidationError) {
         console.log(err);
@@ -71,7 +74,7 @@ const NewTransactionModal: React.FC<NewTransactionModalProps> = ({
         <h2>Cadastrar transação</h2>
 
         <Input placeholder="Título" name="title" />
-        <Input type="number" placeholder="valor" name="value" />
+        <Input placeholder="valor" name="value" />
 
         <TransactionType>
           <TransactionTypeButton
