@@ -1,6 +1,7 @@
 import * as Yup from "yup";
 import React, { useState } from "react";
 import Modal from "react-modal";
+import { TransactionInput, useTransactions } from "../../hooks/useTransactions";
 
 import {
   FormTransaction,
@@ -13,18 +14,10 @@ import outcomeImg from "../../assets/outcome.svg";
 
 import closeImg from "../../assets/close.svg";
 import Input from "../Input";
-import { api } from "../../services/api";
 
 interface NewTransactionModalProps {
   isOpen: boolean;
   onRequestClose: () => void;
-}
-
-interface FormData {
-  title: string;
-  value: number;
-  category: string;
-  type: string;
 }
 
 const NewTransactionModal: React.FC<NewTransactionModalProps> = ({
@@ -32,8 +25,9 @@ const NewTransactionModal: React.FC<NewTransactionModalProps> = ({
   onRequestClose,
 }) => {
   const [transactionType, setTransactionType] = useState("income");
+  const { createTransaction } = useTransactions();
 
-  async function handleNewTransaction(data: FormData) {
+  async function handleNewTransaction(data: TransactionInput) {
     try {
       const schema = Yup.object().shape({
         title: Yup.string().required(),
@@ -42,12 +36,16 @@ const NewTransactionModal: React.FC<NewTransactionModalProps> = ({
         type: Yup.string().required(),
       });
 
-      data = { ...data, value: Number(data.value), type: transactionType };
-      await schema.validate(data, {
+      const transactionData = {
+        ...data,
+        value: Number(data.value),
+        type: transactionType,
+      };
+      await schema.validate(transactionData, {
         abortEarly: false,
       });
 
-      await api.post("/transactions", data);
+      await createTransaction(transactionData);
       onRequestClose();
     } catch (err) {
       if (err instanceof Yup.ValidationError) {

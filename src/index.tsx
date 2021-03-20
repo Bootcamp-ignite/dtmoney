@@ -4,6 +4,7 @@ import App from "./App";
 import { GlobalStyle } from "./styles/global";
 import { createServer, Model } from "miragejs";
 import ReactModal from "react-modal";
+import { TransactionsProvider } from "./hooks/useTransactions";
 
 createServer({
   models: {
@@ -41,7 +42,7 @@ createServer({
 
     this.post("/transactions", (schema, request) => {
       const data = JSON.parse(request.requestBody);
-      return schema.create("transaction", data);
+      return schema.create("transaction", { ...data, createdAt: new Date() });
     });
   },
 });
@@ -50,8 +51,10 @@ ReactModal.setAppElement("#root");
 
 ReactDOM.render(
   <React.StrictMode>
-    <GlobalStyle />
-    <App />
+    <TransactionsProvider>
+      <GlobalStyle />
+      <App />
+    </TransactionsProvider>
   </React.StrictMode>,
   document.getElementById("root")
 );
